@@ -1,42 +1,34 @@
-import React, { useState, useEffect } from "react";
-import './App.css';
+import React from "react";
+import { useQuery } from "react-query";
+import "./App.css";
 import axios from "axios";
 
-// This is a typical component with an Asynchronus data fetch 
+// const response = await axios("http://swapi.dev/api/planets/");
+
+// This is a typical component with an Asynchronus data fetch
 // We are using Axios here, but can use standard js fetch command.
 function App() {
-  const [isLoading, setLoading] = useState(false);
-  const [isError, setError] = useState(false);
-  const [data, setData] = useState({});
+  const { isLoading, error, data } = useQuery("swapiAPI", async () => {
+    const { data } = await axios("http://swapi.dev/api/planets/");
+    return data;
+  });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setError(false);
-      setLoading(true);
+  if (isLoading) {
+    return <div style={{ textAlign: "center" }}>Loading ...</div>;
+  }
 
-      try {
-        const response = await axios("http://swapi.dev/api/planets/");
+  if (error) {
+    return <div>Something went wrong ...</div>;
+  }
 
-        setData(response.data);
-      } catch (error) {
-        setError(true);
-      }
-      setLoading(false);
-    };
-    fetchData();
-  }, []);
   return (
     <div className="App">
       <h1>Starwars Planets</h1>
-      {isError && <div>Something went wrong ...</div>}
 
-      {isLoading ? (
-        <div>Loading ...</div>
-      ) : (
-        <div>
-           {(JSON.stringify(data) !== '{}') && data.results.map((planet,index) =><p key={index}>{planet.name}</p>)}           
-        </div>
-      )}
+      <div>
+        {JSON.stringify(data) !== "{}" &&
+          data.results.map((planet, index) => <p key={index}>{planet.name}</p>)}
+      </div>
     </div>
   );
 }

@@ -9,7 +9,7 @@ import axios from "axios";
 // We are using Axios here, but can use standard js fetch command.
 function App() {
   const { isLoading, error, data } = useQuery("swapiAPI", async () => {
-    const { data } = await axios("http://swapi.dev/api/planets/");
+    const { data } = await axios("https://swapi.dev/api/planets/");
     return data;
   });
 
